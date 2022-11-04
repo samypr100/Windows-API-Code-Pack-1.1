@@ -1,5 +1,7 @@
 # Windows-API-Code-Pack-1.1.5
 
+[![Nuget Version](https://img.shields.io/nuget/v/Microsoft-WindowsAPICodePack-Core-6.0.svg)](https://www.nuget.org/packages?q=Microsoft-WindowsAPICodePack+6.0)
+
 ## README
 
 This is a fork of the Microsoft © Windows API Code Pack, based on a repository created by [contre](https://github.com/contre/Windows-API-Code-Pack-1.1). Due to the lack of updates to the original package, this fork was created to add support for all current .NET Framework and .NET Core versions.
