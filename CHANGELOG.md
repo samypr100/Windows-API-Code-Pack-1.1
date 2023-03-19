@@ -1,3 +1,14 @@
+### v1.1.6 Preview
+
+**Core 1.1.6**
+**Shell 1.1.6**
+**ShellExtensions 1.1.6**
+**Sensors 1.1.6**
+**ExtendedLinguisticServices 1.1.6**
+
+- Initial GA Actions Support
+- Added New Target .NET 7.0
+
 ### 2022-11-04
 
 **Core 1.1.5**
