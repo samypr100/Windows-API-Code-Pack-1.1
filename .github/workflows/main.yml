@@ -1,0 +1,159 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  release:
+    types: [ "published" ]
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+
+  build:
+
+    name: ${{ matrix.os }} / ${{ matrix.configuration }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        configuration: [ Debug, Release ]
+        os: [ windows-2022 ]
+
+    env:
+      SRC_SLN_PATH: source/WindowsAPICodePack
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      # Assuming .NET Framework flavors are available in OS
+      - name: Install .NET Core Runtimes
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            6.0.x
+            5.0.x
+            3.1.x
+
+      # https://github.com/microsoft/setup-msbuild
+      - name: Add MSBuild.exe to PATH
+        uses: microsoft/setup-msbuild@v1
+
+      # Setup Short SHA
+      - name: Setup Short SHA
+        run: echo "build_sha=$("${{ github.sha }}".SubString(0, 7))" >> $env:GITHUB_ENV
+
+      # Setup Build Suffix (for staging)
+      - name: Setup Build Suffix
+        if: github.event_name != 'release'
+        run: echo "build_suffix=build.${{ env.build_sha }}" >> $env:GITHUB_ENV
+
+      # Setup Build Suffix (for release)
+      - name: Setup Build Suffix
+        if: github.event_name == 'release'
+        run: |
+          $suffix = "${{ github.ref_name }}".Split("-",2)[1]
+          echo "build_suffix=$( if($suffix) { "${suffix}.${{ env.build_sha }}" } else { '' } )" >> $env:GITHUB_ENV
+
+      # Create NuGet Cache
+      - name: NuGet Cache
+        id: nuget-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: ${{ matrix.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-nuget-
+
+      # Restore Build Deps
+      - name: Restore Dependencies
+        run: dotnet restore
+        working-directory: ${{ env.SRC_SLN_PATH }}
+
+      # Build Library
+      - name: Build the Application
+        run: dotnet build --no-restore -c $env:Configuration -p:VersionSuffix=${{ env.build_suffix }}
+        working-directory: ${{ env.SRC_SLN_PATH }}
+        env:
+          Configuration: ${{ matrix.configuration }}
+
+      # Upload Build Artifacts
+      - name: Upload Build Artifacts
+        if: matrix.configuration == 'Release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: nupkg-${{ env.build_sha }}
+          path: ${{env.SRC_SLN_PATH}}/**/bin/${{ matrix.configuration }}/*.*nupkg
+
+  stage:
+
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+
+    name: Stage Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Setup Short SHA
+        run: echo "build_sha=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: nupkg-${{ env.build_sha }}
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Push to NuGet
+        run: |
+          for pkg in $GITHUB_WORKSPACE/**/bin/Release/*.nupkg
+          do
+            cd $(dirname $pkg)
+            echo "Publishing $(basename $pkg)"
+            dotnet nuget push "$(basename $pkg)" -k ${{ secrets.NUGET_TEST_API_KEY }} -s ${{ vars.NUGET_TEST_API_KEY_SOURCE }} --skip-duplicate
+          done
+
+  deploy:
+
+    needs: build
+    if: github.event_name == 'release'
+
+    name: Release Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Setup Short SHA
+        run: echo "build_sha=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: nupkg-${{ env.build_sha }}
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Push to NuGet
+        run: |
+          for pkg in $GITHUB_WORKSPACE/**/bin/Release/*.nupkg
+          do
+            cd $(dirname $pkg)
+            echo "Publishing $(basename $pkg)"
+            dotnet nuget push "$(basename $pkg)" -k ${{ secrets.NUGET_API_KEY }} -s ${{ vars.NUGET_API_KEY_SOURCE }} --skip-duplicate
+          done

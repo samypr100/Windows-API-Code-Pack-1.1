@@ -1,12 +1,13 @@
-# Windows-API-Code-Pack-1.1.5
+# Windows API Code Pack
 
+[![CI Build](https://github.com/samypr100/Windows-API-Code-Pack-1.1/actions/workflows/main.yml/badge.svg)](https://github.com/samypr100/Windows-API-Code-Pack-1.1/actions/workflows/main.yml)
 [![Nuget Version](https://img.shields.io/nuget/v/Microsoft-WindowsAPICodePack-Core-6.0.svg)](https://www.nuget.org/packages?q=Microsoft-WindowsAPICodePack+6.0)
 
 ## README
 
 This is a fork of the Microsoft © Windows API Code Pack, based on a repository created by [contre](https://github.com/contre/Windows-API-Code-Pack-1.1). Due to the lack of updates to the original package, this fork was created to add support for all current .NET Framework and .NET Core versions.
 
-Now with added .Net6.0 support ! (windows only)
+Now with added .NET 6.0, .NET 7.0 support ! (windows only)
 
 ## NuGet packages (recommended)
 

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</AssemblyName>
     <PackageId>Microsoft-WindowsAPICodePack-ExtendedLinguisticServices-6.0</PackageId>
-    <VersionPrefix>1.1.5</VersionPrefix>
+    <VersionPrefix>1.1.6</VersionPrefix>
     <Title>$(AssemblyName)</Title>
     <Authors>rpastric;contre;dahall;samypr100</Authors>
     <Company>Microsoft</Company>
@@ -21,7 +21,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFrameworks>net452;net462;net472;net48;net481;netcoreapp3.1;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>net452;net462;net472;net48;net481;netcoreapp3.1;net5.0-windows;net6.0-windows;net7.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</RootNamespace>
