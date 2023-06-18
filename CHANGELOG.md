@@ -8,6 +8,8 @@
 
 - Initial GA Actions Support
 - Added New Target .NET 7.0
+- Fix TaskDialog.DefaultButton property is ignored
+- remove first dot in extension
 
 ### 2022-11-04
 

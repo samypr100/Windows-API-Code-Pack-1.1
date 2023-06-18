@@ -128,7 +128,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
             int indexOfDot = rawExtension.IndexOf('.');
             if (indexOfDot != -1)
             {
-                rawExtension.Remove(indexOfDot);
+                rawExtension = rawExtension.Substring(indexOfDot + 1);
             }
 
             return rawExtension;
