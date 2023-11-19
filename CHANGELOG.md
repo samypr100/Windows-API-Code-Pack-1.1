@@ -1,4 +1,4 @@
-### v1.1.6 Preview
+### v1.1.6
 
 **Core 1.1.6**
 **Shell 1.1.6**
@@ -6,8 +6,8 @@
 **Sensors 1.1.6**
 **ExtendedLinguisticServices 1.1.6**
 
-- Initial GA Actions Support
-- Added New Target .NET 7.0
+- GH Actions Support
+- Added new targets .NET 7.0, and .NET 8.0
 - Fix TaskDialog.DefaultButton property is ignored
 - remove first dot in extension
 
