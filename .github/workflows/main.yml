@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: main-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -24,7 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         configuration: [ Debug, Release ]
         os: [ windows-2022 ]
@@ -35,13 +39,14 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Assuming .NET Framework flavors are available in OS
       - name: Install .NET Core Runtimes
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
+            9.0.x
             8.0.x
             7.0.x
             6.0.x
@@ -50,7 +55,7 @@ jobs:
 
       # https://github.com/microsoft/setup-msbuild
       - name: Add MSBuild.exe to PATH
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
 
       # Setup Short SHA
       - name: Setup Short SHA
@@ -71,7 +76,7 @@ jobs:
       # Create NuGet Cache
       - name: NuGet Cache
         id: nuget-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.NUGET_PACKAGES }}
           key: ${{ matrix.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -93,7 +98,7 @@ jobs:
       # Upload Build Artifacts
       - name: Upload Build Artifacts
         if: matrix.configuration == 'Release'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nupkg-${{ env.build_sha }}
           path: ${{env.SRC_SLN_PATH}}/**/bin/${{ matrix.configuration }}/*.*nupkg
@@ -112,13 +117,13 @@ jobs:
         run: echo "build_sha=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: nupkg-${{ env.build_sha }}
 
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Push to NuGet
         run: |
@@ -143,13 +148,13 @@ jobs:
         run: echo "build_sha=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: nupkg-${{ env.build_sha }}
 
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
       - name: Push to NuGet
         run: |

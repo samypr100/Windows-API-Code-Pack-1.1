@@ -25,3 +25,6 @@ indent_size = 2
 tab_width = 4
 indent_size = 4
 indent_style = space
+
+# https://github.com/dotnet/docs/issues/42724
+dotnet_diagnostic.WFO1000.severity = warning

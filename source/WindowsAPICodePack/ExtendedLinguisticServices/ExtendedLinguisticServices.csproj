@@ -3,11 +3,12 @@
   <PropertyGroup>
     <AssemblyName>Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</AssemblyName>
     <PackageId>Microsoft-WindowsAPICodePack-ExtendedLinguisticServices-6.0</PackageId>
-    <VersionPrefix>1.1.6</VersionPrefix>
+    <VersionPrefix>1.1.7</VersionPrefix>
     <Title>$(AssemblyName)</Title>
     <Authors>rpastric;contre;dahall;samypr100</Authors>
     <Company>Microsoft</Company>
     <Product>Microsoft Windows API Code Pack for .NET Framework</Product>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/samypr100/Windows-API-Code-Pack-1.1</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -15,13 +16,13 @@
     <PackageReleaseNotes>See CHANGELOG.md in project site. https://github.com/samypr100/Windows-API-Code-Pack-1.1/blob/main/CHANGELOG.md</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/samypr100/Windows-API-Code-Pack-1.1</RepositoryUrl>
     <RepositoryType>.git</RepositoryType>
-    <Copyright>Copyright © 2023</Copyright>
+    <Copyright>Copyright © 2024</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>WindowsAPICodePack</PackageTags>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFrameworks>net452;net462;net472;net48;net481;netcoreapp3.1;net5.0-windows;net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>
+    <TargetFrameworks>net452;net462;net472;net48;net481;netcoreapp3.1;net5.0-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Microsoft.WindowsAPICodePack.ExtendedLinguisticServices</RootNamespace>
@@ -29,6 +30,9 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>ProjectSignKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\..\README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\LICENSE" Pack="true" PackagePath=""/>
   </ItemGroup>
