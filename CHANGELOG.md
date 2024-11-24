@@ -1,3 +1,13 @@
+### v1.1.7
+
+**Core 1.1.7**
+**Shell 1.1.7**
+**ShellExtensions 1.1.7**
+**Sensors 1.1.7**
+**ExtendedLinguisticServices 1.1.7**
+
+- Added new target .NET 9.0
+
 ### v1.1.6
 
 **Core 1.1.6**
