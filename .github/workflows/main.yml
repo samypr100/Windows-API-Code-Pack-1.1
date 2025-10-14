@@ -39,13 +39,14 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Assuming .NET Framework flavors are available in OS
       - name: Install .NET Core Runtimes
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
+            10.0.x
             9.0.x
             8.0.x
             7.0.x
@@ -121,9 +122,9 @@ jobs:
         with:
           name: nupkg-${{ env.build_sha }}
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Push to NuGet
         run: |
@@ -152,9 +153,9 @@ jobs:
         with:
           name: nupkg-${{ env.build_sha }}
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Push to NuGet
         run: |
