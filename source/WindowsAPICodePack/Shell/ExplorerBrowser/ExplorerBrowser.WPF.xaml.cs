@@ -13,6 +13,24 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsPresentationFoundation
     /// <summary>Interaction logic for ExplorerBrowser.xaml</summary>
     public partial class ExplorerBrowser : UserControl, IDisposable
     {
+        private static readonly DependencyPropertyKey ItemsPropertyKey =
+                    DependencyProperty.RegisterReadOnly(
+                        "Items", typeof(ObservableCollection<ShellObject>),
+                        typeof(ExplorerBrowser),
+                        new PropertyMetadata(null));
+
+        private static readonly DependencyPropertyKey NavigationLogPropertyKey =
+                    DependencyProperty.RegisterReadOnly(
+                        "NavigationLog", typeof(ObservableCollection<ShellObject>),
+                        typeof(ExplorerBrowser),
+                        new PropertyMetadata(null));
+
+        private static readonly DependencyPropertyKey SelectedItemsPropertyKey =
+                            DependencyProperty.RegisterReadOnly(
+                                "SelectedItems", typeof(ObservableCollection<ShellObject>),
+                                typeof(ExplorerBrowser),
+                                new PropertyMetadata(null));
+
         /// <summary>The items in the ExplorerBrowser window</summary>
         public static readonly DependencyProperty ItemsProperty = ItemsPropertyKey.DependencyProperty;
 
@@ -184,24 +202,6 @@ namespace Microsoft.WindowsAPICodePack.Controls.WindowsPresentationFoundation
                                 "ViewMode", typeof(ExplorerBrowserViewMode),
                                 typeof(ExplorerBrowser),
                                 new PropertyMetadata(ExplorerBrowserViewMode.Auto, OnViewModeChanged));
-
-        private static readonly DependencyPropertyKey ItemsPropertyKey =
-                            DependencyProperty.RegisterReadOnly(
-                                "Items", typeof(ObservableCollection<ShellObject>),
-                                typeof(ExplorerBrowser),
-                                new PropertyMetadata(null));
-
-        private static readonly DependencyPropertyKey NavigationLogPropertyKey =
-                            DependencyProperty.RegisterReadOnly(
-                                "NavigationLog", typeof(ObservableCollection<ShellObject>),
-                                typeof(ExplorerBrowser),
-                                new PropertyMetadata(null));
-
-        private static readonly DependencyPropertyKey SelectedItemsPropertyKey =
-                            DependencyProperty.RegisterReadOnly(
-                                "SelectedItems", typeof(ObservableCollection<ShellObject>),
-                                typeof(ExplorerBrowser),
-                                new PropertyMetadata(null));
 
         private readonly DispatcherTimer dtCLRUpdater = new DispatcherTimer();
 
