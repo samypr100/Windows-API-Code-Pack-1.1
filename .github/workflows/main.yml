@@ -39,13 +39,14 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # Assuming .NET Framework flavors are available in OS
       - name: Install .NET Core Runtimes
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
+            11.0.x
             10.0.x
             9.0.x
             8.0.x
@@ -56,7 +57,7 @@ jobs:
 
       # https://github.com/microsoft/setup-msbuild
       - name: Add MSBuild.exe to PATH
-        uses: microsoft/setup-msbuild@v2
+        uses: microsoft/setup-msbuild@v3
 
       # Setup Short SHA
       - name: Setup Short SHA
@@ -77,7 +78,7 @@ jobs:
       # Create NuGet Cache
       - name: NuGet Cache
         id: nuget-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ env.NUGET_PACKAGES }}
           key: ${{ matrix.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -99,7 +100,7 @@ jobs:
       # Upload Build Artifacts
       - name: Upload Build Artifacts
         if: matrix.configuration == 'Release'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nupkg-${{ env.build_sha }}
           path: ${{env.SRC_SLN_PATH}}/**/bin/${{ matrix.configuration }}/*.*nupkg
@@ -112,19 +113,32 @@ jobs:
     name: Stage Artifacts
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write # Required for NuGet Trusted Publishing (OIDC)
+
     steps:
 
       - name: Setup Short SHA
         run: echo "build_sha=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nupkg-${{ env.build_sha }}
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
+
+      # https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing
+      - name: NuGet Login
+        uses: nuget/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_TEST_USER }}
+          token-service-url: ${{ vars.NUGET_TEST_TOKEN_SERVICE_URL }}
+          audience: ${{ vars.NUGET_TEST_AUDIENCE }}
 
       - name: Push to NuGet
         run: |
@@ -132,7 +146,7 @@ jobs:
           do
             cd $(dirname $pkg)
             echo "Publishing $(basename $pkg)"
-            dotnet nuget push "$(basename $pkg)" -k ${{ secrets.NUGET_TEST_API_KEY }} -s ${{ vars.NUGET_TEST_API_KEY_SOURCE }} --skip-duplicate
+            dotnet nuget push "$(basename $pkg)" -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} -s ${{ vars.NUGET_TEST_API_KEY_SOURCE }} --skip-duplicate
           done
 
   deploy:
@@ -143,19 +157,30 @@ jobs:
     name: Release Artifacts
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write # Required for NuGet Trusted Publishing (OIDC)
+
     steps:
 
       - name: Setup Short SHA
         run: echo "build_sha=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nupkg-${{ env.build_sha }}
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
+
+      # https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing
+      - name: NuGet Login
+        uses: nuget/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
 
       - name: Push to NuGet
         run: |
@@ -163,5 +188,5 @@ jobs:
           do
             cd $(dirname $pkg)
             echo "Publishing $(basename $pkg)"
-            dotnet nuget push "$(basename $pkg)" -k ${{ secrets.NUGET_API_KEY }} -s ${{ vars.NUGET_API_KEY_SOURCE }} --skip-duplicate
+            dotnet nuget push "$(basename $pkg)" -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }} -s ${{ vars.NUGET_API_KEY_SOURCE }} --skip-duplicate
           done
